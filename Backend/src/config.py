@@ -18,7 +18,7 @@ class Config:
     # ==============================
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL',
-        'mysql+pymysql://umaraidevs:YOUR_PASSWORD@umaraidevs.mysql.pythonanywhere-services.com/db_lms_1'
+        'mysql+pymysql://umaraidevs:@umaraidevs.mysql.pythonanywhere-services.com/db_lms_1'
     )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
