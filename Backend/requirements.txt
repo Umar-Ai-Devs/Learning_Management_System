@@ -1,0 +1,23 @@
+Flask==2.3.3
+flask-cors==4.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Bcrypt==1.0.1
+Flask-JWT-Extended==4.5.3
+flask-mail==0.10.0
+flask-talisman==1.1.0
+flask-limiter==4.1.1
+
+PyMySQL==1.1.0
+marshmallow==3.20.1
+
+# Testing
+pytest==7.4.0
+pytest-cov==4.1.0
+
+# Real-time (COMPATIBLE VERSIONS)
+flask-socketio==5.3.6
+python-socketio==5.8.0
+eventlet==0.33.3
+
+# Optional (for scaling / background tasks)
+redis==5.0.1
