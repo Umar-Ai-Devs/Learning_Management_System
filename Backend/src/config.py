@@ -14,12 +14,12 @@ class Config:
     TESTING = False
 
     # ==============================
-    # DATABASE (IMPORTANT FIX HERE)
+    # DATABASE (FIXED)
     # ==============================
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-    'DATABASE_URL',
-    'mysql+pymysql://umaraidevs:Umar9086%40@umaraidevs.mysql.pythonanywhere-services.com/umaraidevs$db_lms_1'
-)
+        'DATABASE_URL',
+        'mysql+pymysql://umaraidevs:Umar9086%40@umaraidevs.mysql.pythonanywhere-services.com/umaraidevs$db_lms_1'
+    )
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -81,10 +81,10 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
 
-    # Force PythonAnywhere DB in production
+    # FIXED (removed wrong fallback password placeholder)
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         'DATABASE_URL',
-        'mysql+pymysql://umaraidevs:YOUR_PASSWORD@umaraidevs.mysql.pythonanywhere-services.com/db_lms_1'
+        'mysql+pymysql://umaraidevs:Umar9086%40@umaraidevs.mysql.pythonanywhere-services.com/umaraidevs$db_lms_1'
     )
 
     SESSION_COOKIE_SECURE = True
@@ -93,7 +93,6 @@ class ProductionConfig(Config):
     REMEMBER_COOKIE_SECURE = True
 
 
-# Configuration mapping
 config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
