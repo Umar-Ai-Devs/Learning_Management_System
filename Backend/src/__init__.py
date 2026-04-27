@@ -89,7 +89,7 @@ def register_blueprints(app):
 # ======================================================
 def create_default_admin(app):
     from src.extentions import db
-    from src.models import User  # change if your model name differs
+    from src.models.user import User  # change if your model name differs
 
     with app.app_context():
         admin_email = "admin@lms.com"
