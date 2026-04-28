@@ -662,6 +662,183 @@ body {
   }
 }
 
+/* ── Enhanced Mobile-First Responsive Utilities ───────────────── */
+
+/* Fluid typography with clamp() */
+:root {
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.625vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.75vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  
+  --space-1: clamp(0.25rem, 0.2rem + 0.25vw, 0.375rem);
+  --space-2: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-3: clamp(0.75rem, 0.6rem + 0.75vw, 1rem);
+  --space-4: clamp(1rem, 0.8rem + 1vw, 1.25rem);
+  --space-5: clamp(1.25rem, 1rem + 1.25vw, 1.5rem);
+  --space-6: clamp(1.5rem, 1.2rem + 1.5vw, 2rem);
+  --space-8: clamp(2rem, 1.6rem + 2vw, 2.5rem);
+}
+
+/* Mobile-optimized table patterns */
+.table-mobile-card {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* Stacked card table pattern for mobile */
+  .table-responsive table {
+    display: none;
+  }
+  
+  .table-mobile-card {
+    display: block;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  
+  .table-mobile-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .table-mobile-card-row:last-child {
+    border-bottom: none;
+  }
+  
+  .table-mobile-card-label {
+    font-size: 12px;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 100px;
+  }
+  
+  .table-mobile-card-value {
+    font-size: 13px;
+    color: #0f172a;
+    font-weight: 500;
+    text-align: right;
+    flex: 1;
+  }
+  
+  /* Hide desktop-only elements on mobile */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Show mobile-only elements */
+  .mobile-only {
+    display: block !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .table-mobile-card {
+    display: none !important;
+  }
+  
+  .table-responsive table {
+    display: table !important;
+  }
+  
+  .desktop-only {
+    display: block !important;
+  }
+  
+  .mobile-only {
+    display: none !important;
+  }
+}
+
+/* Enhanced modal responsiveness */
+@media (max-width: 767px) {
+  .modal-content {
+    margin: 12px !important;
+    padding: 20px !important;
+    max-width: calc(100% - 24px) !important;
+    max-height: calc(100vh - 24px) !important;
+    border-radius: 16px !important;
+  }
+  
+  .modal-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  
+  .modal-actions {
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .modal-actions button {
+    width: 100% !important;
+  }
+}
+
+/* Enhanced form responsiveness */
+@media (max-width: 767px) {
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+  
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  
+  .form-field {
+    width: 100% !important;
+  }
+  
+  /* Date/time inputs */
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"] {
+    min-height: 48px !important;
+    font-size: 16px !important;
+  }
+}
+
+/* Enhanced button group responsiveness */
+@media (max-width: 767px) {
+  .btn-group {
+    flex-direction: column !important;
+    width: 100% !important;
+  }
+  
+  .btn-group button {
+    width: 100% !important;
+    margin: 4px 0 !important;
+  }
+}
+
+/* Safe area insets for modern mobile devices */
+@supports (padding: max(0px)) {
+  .safe-area-padding {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  
+  .safe-area-margin {
+    margin-left: max(16px, env(safe-area-inset-left));
+    margin-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
 /* ── Print Styles ──────────────────────────────────────────── */
 @media print {
   .no-print {

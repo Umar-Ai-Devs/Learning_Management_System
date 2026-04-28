@@ -107,6 +107,41 @@ export default function TeacherAssignments() {
         ))}
       </Table>
 
+      {/* Mobile card view */}
+      <div className="table-mobile-card">
+        {assignments.map(a => (
+          <div key={a.id} className="table-mobile-card">
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Title</span>
+              <span className="table-mobile-card-value">{a.title}</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Course</span>
+              <span className="table-mobile-card-value">{courses.find(c => c.id === a.course_id)?.title || `Course #${a.course_id}`}</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Due Date</span>
+              <span className="table-mobile-card-value" style={{ color: isOverdue(a.due_date) ? '#dc2626' : '#0f172a' }}>
+                {new Date(a.due_date).toLocaleDateString()}
+                {isOverdue(a.due_date) && <span style={{ marginLeft: 6 }}><Badge label="Overdue" color="#ef4444" /></span>}
+              </span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Points</span>
+              <span className="table-mobile-card-value">{a.total_points} pts</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Actions</span>
+              <span className="table-mobile-card-value">
+                <Btn variant="ghost" style={{ padding: '8px 16px', fontSize: 14 }} onClick={() => openSubmissions(a)}>
+                  View Submissions
+                </Btn>
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Create Modal */}
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Create Assignment">
         <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>

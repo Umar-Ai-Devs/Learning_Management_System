@@ -54,6 +54,44 @@ export default function StudentCourses() {
           </tr>
         ))}
       </Table>
+
+      {/* Mobile card view */}
+      <div className="table-mobile-card">
+        {courses.map(c => (
+          <div key={c.id} className="table-mobile-card">
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Course</span>
+              <span className="table-mobile-card-value">{c.title}</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Code</span>
+              <span className="table-mobile-card-value">{c.code}</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Credits</span>
+              <span className="table-mobile-card-value">{c.credits} cr</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Teacher</span>
+              <span className="table-mobile-card-value">{c.teacher_name || '-'}</span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Status</span>
+              <span className="table-mobile-card-value">
+                <Badge label={c.is_enrolled ? 'Enrolled' : 'Available'} color={c.is_enrolled ? '#10b981' : '#475569'} />
+              </span>
+            </div>
+            <div className="table-mobile-card-row">
+              <span className="table-mobile-card-label">Action</span>
+              <span className="table-mobile-card-value">
+                {c.is_enrolled
+                  ? <Btn variant="danger" style={{ padding: '8px 16px', fontSize: 14 }} onClick={() => drop(c.id)}>Drop</Btn>
+                  : <Btn style={{ padding: '8px 16px', fontSize: 14 }} onClick={() => enroll(c.id)}>Enroll</Btn>}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
     </ProtectedRoute>
   );
 }
