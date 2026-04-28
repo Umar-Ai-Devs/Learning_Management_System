@@ -99,6 +99,7 @@ def create_default_admin(app):
             hashed_password = bcrypt.generate_password_hash("Admin@123456").decode('utf-8')
 
             admin = User(
+                name="Admin",   # ✅ ADD THIS LINE
                 email=admin_email,
                 password=hashed_password,
                 role="admin"
