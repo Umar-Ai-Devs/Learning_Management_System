@@ -1,7 +1,6 @@
 import os
 from flask import Flask
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash
 
 from src.extentions import db, bcrypt, jwt, mail, socketio
 from src.config import config
@@ -27,7 +26,7 @@ def create_app(config_name=None):
     jwt.init_app(app)
     mail.init_app(app)
 
-    # ⚠️ PythonAnywhere FIX (no real websockets)
+    # PythonAnywhere-safe SocketIO (no real websockets)
     socketio.init_app(
         app,
         cors_allowed_origins="*",
@@ -85,11 +84,11 @@ def register_blueprints(app):
 
 
 # ======================================================
-# DEFAULT ADMIN CREATION (RUNS ON STARTUP)
+# DEFAULT ADMIN CREATION
 # ======================================================
 def create_default_admin(app):
-    from src.extentions import db
-    from src.models.user import User  # change if your model name differs
+    from src.models.user import User
+    from src.extentions import db, bcrypt
 
     with app.app_context():
         admin_email = "admin@lms.com"
@@ -97,9 +96,11 @@ def create_default_admin(app):
         existing_admin = User.query.filter_by(email=admin_email).first()
 
         if not existing_admin:
+            hashed_password = bcrypt.generate_password_hash("Admin@123456").decode('utf-8')
+
             admin = User(
                 email=admin_email,
-                password=generate_password_hash("Admin@123456"),
+                password=hashed_password,
                 role="admin"
             )
 
