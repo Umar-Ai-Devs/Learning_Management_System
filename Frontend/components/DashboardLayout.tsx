@@ -56,18 +56,18 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div style={s.shell}>
+    <div className="dashboard-layout" style={s.shell}>
       {/* Mobile menu button */}
-      <button onClick={toggleSidebar} style={s.menuBtn}>
+      <button onClick={toggleSidebar} style={s.menuBtn} className="mobile-menu-btn">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M3 12h18M3 6h18M3 18h18"/>
         </svg>
       </button>
 
       {/* Sidebar */}
-      <aside style={{ ...s.sidebar, transform: sidebarOpen ? 'translateX(0)' : undefined }}>
+      <aside className={sidebarOpen ? 'sidebar-open' : ''} style={{ ...s.sidebar, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
         {/* Close button for mobile */}
-        <button onClick={closeSidebar} style={s.closeBtn} className="hide-desktop">
+        <button onClick={closeSidebar} style={s.closeBtn} className="close-btn hide-desktop">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
