@@ -1,161 +1,154 @@
-'use client';
-import { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { useAuth } from '@/context/AuthContext'
+import { Input, Card } from '@/components/ui'
+import Button from '@/components/ui/Button'
+import { cn } from '@/lib/utils'
 
 export default function LoginPage() {
-  const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [windowWidth, setWindowWidth] = useState(0);
+  const { login } = useAuth()
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  })
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Track window width for responsive styles
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const isMobile = windowWidth < 768;
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {}
+    
+    if (!formData.email) {
+      newErrors.email = 'Email is required'
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Email is invalid'
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required'
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters'
+    }
+    
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+    e.preventDefault()
+    
+    if (!validateForm()) return
+    
+    setIsLoading(true)
     try {
-      await login(email, password);
-    } catch (err: unknown) {
-      setError((err as { response?: { data?: { error?: string } } })?.response?.data?.error || 'Login failed');
+      await login(formData.email, formData.password)
+    } catch (error) {
+      setErrors({ general: 'Invalid email or password' })
     } finally {
-      setLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }))
+    }
+    if (errors.general) {
+      setErrors(prev => ({ ...prev, general: '' }))
+    }
+  }
 
   return (
-    <div style={s.page}>
-      {/* Left decorative panel - hidden on mobile */}
-      {!isMobile && (
-        <div style={s.left}>
-          <div style={s.leftInner}>
-            <div style={s.leftLogo}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h2 style={s.leftTitle}>EduFlow LMS</h2>
-            <p style={s.leftSub}>A modern platform for students, teachers and administrators to manage learning seamlessly.</p>
-            <div style={s.features}>
-              {['Manage courses & assignments', 'Track grades & submissions', 'Role-based access control'].map(f => (
-                <div key={f} style={s.featureRow}>
-                  <span style={s.featureDot}>✓</span>
-                  <span style={s.featureText}>{f}</span>
-                </div>
-              ))}
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-primary-50 flex items-center justify-center px-4 py-8">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl mb-4 shadow-strong">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
           </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back</h1>
+          <p className="text-gray-600">Sign in to your learning dashboard</p>
         </div>
-      )}
 
-      {/* Right login form */}
-      <div style={isMobile ? s.rightMobile : s.right}>
-        <div style={isMobile ? s.cardMobile : s.card}>
-          {/* Mobile logo */}
-          {isMobile && (
-            <div style={s.mobileLogo}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+        {/* Login Card */}
+        <Card className="p-6 sm:p-8 shadow-strong">
+          {errors.general && (
+            <div className="mb-4 p-3 bg-error-50 border border-error-200 rounded-lg text-sm text-error-700">
+              {errors.general}
             </div>
           )}
-          
-          <h1 style={isMobile ? s.titleMobile : s.title}>Welcome back</h1>
-          <p style={isMobile ? s.subtitleMobile : s.subtitle}>Sign in to your account to continue</p>
 
-          <form onSubmit={handleSubmit} style={isMobile ? s.formMobile : s.form}>
-            <div style={s.field}>
-              <label style={s.label}>Email address</label>
-              <input
-                style={isMobile ? s.inputMobile : s.input}
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                onFocus={e => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)'; }}
-                onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }}
-              />
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              label="Email Address"
+              type="email"
+              placeholder="you@example.com"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              error={errors.email}
+              required
+              fullWidth
+              className="min-h-[48px]"
+            />
+
+            <Input
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+              error={errors.password}
+              required
+              fullWidth
+              className="min-h-[48px]"
+            />
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                />
+                <span className="ml-2 text-sm text-gray-600">Remember me</span>
+              </label>
+              <Link href="/forgot-password" className="text-sm text-primary-600 hover:text-primary-700">
+                Forgot password?
+              </Link>
             </div>
-            <div style={s.field}>
-              <label style={s.label}>Password</label>
-              <input
-                style={isMobile ? s.inputMobile : s.input}
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                onFocus={e => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)'; }}
-                onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }}
-              />
-            </div>
 
-            {error && (
-              <div style={s.errorBox}>
-                <span>⚠</span> {error}
-              </div>
-            )}
-
-            <button style={{ ...s.btn, opacity: loading ? 0.75 : 1 }} type="submit" disabled={loading}>
-              {loading
-                ? <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                    <span style={s.spinner} /> Signing in...
-                  </span>
-                : 'Sign In'}
-            </button>
+            <Button
+              type="submit"
+              fullWidth
+              loading={isLoading}
+              className="min-h-[48px] text-base"
+            >
+              Sign In
+            </Button>
           </form>
 
-          <div style={isMobile ? s.hintMobile : s.hint}>
-            <span style={s.hintIcon}>💡</span>
-            <span>Default admin: <strong>admin@lms.com</strong> / <strong>Admin@123456</strong></span>
+          {/* Demo Credentials */}
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-2">Demo credentials:</p>
+            <div className="space-y-1 text-xs text-gray-500">
+              <p><strong>Admin:</strong> admin@lms.com / Admin@123456</p>
+              <p><strong>Teacher:</strong> teacher@lms.com / Teacher@123456</p>
+              <p><strong>Student:</strong> student@lms.com / Student@123456</p>
+            </div>
           </div>
-        </div>
+        </Card>
+
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-500 mt-6">
+          Don't have an account?{' '}
+          <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+            Contact administrator
+          </Link>
+        </p>
       </div>
     </div>
-  );
+  )
 }
-
-const s: Record<string, React.CSSProperties> = {
-  page:       { display: 'flex', minHeight: '100vh', background: '#f5f7fa' },
-  left:       { width: '45%', background: 'linear-gradient(145deg, #6366f1 0%, #8b5cf6 60%, #a78bfa 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 },
-  leftInner:  { maxWidth: 360 },
-  leftLogo:   { width: 56, height: 56, background: 'rgba(255,255,255,0.2)', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 },
-  leftTitle:  { fontSize: 28, fontWeight: 700, color: '#fff', margin: '0 0 12px' },
-  leftSub:    { fontSize: 15, color: 'rgba(255,255,255,0.8)', lineHeight: 1.6, margin: '0 0 32px' },
-  features:   { display: 'flex', flexDirection: 'column', gap: 12 },
-  featureRow: { display: 'flex', alignItems: 'center', gap: 10 },
-  featureDot: { width: 22, height: 22, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#fff', fontWeight: 700, flexShrink: 0 },
-  featureText:{ fontSize: 14, color: 'rgba(255,255,255,0.9)' },
-  right:      { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 },
-  rightMobile:{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, paddingTop: 40 },
-  card:       { background: '#ffffff', borderRadius: 20, padding: '48px 40px', width: '100%', maxWidth: 420, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' },
-  cardMobile: { background: '#ffffff', borderRadius: 16, padding: '24px 20px', width: '100%', maxWidth: 420, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' },
-  mobileLogo:  { display: 'flex', justifyContent: 'center', marginBottom: 20 },
-  title:      { fontSize: 24, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' },
-  titleMobile:{ fontSize: 22, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', textAlign: 'center' },
-  subtitle:   { fontSize: 14, color: '#64748b', margin: '0 0 32px' },
-  subtitleMobile:{ fontSize: 13, color: '#64748b', margin: '0 0 24px', textAlign: 'center' },
-  form:       { display: 'flex', flexDirection: 'column', gap: 20 },
-  formMobile: { display: 'flex', flexDirection: 'column', gap: 16 },
-  field:      { display: 'flex', flexDirection: 'column', gap: 6 },
-  label:      { fontSize: 13, fontWeight: 600, color: '#374151' },
-  input:      { background: '#fff', border: '1px solid #d1d5db', borderRadius: 10, padding: '12px 16px', fontSize: 14, color: '#0f172a', outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s' },
-  inputMobile:{ background: '#fff', border: '1px solid #d1d5db', borderRadius: 10, padding: '14px 16px', fontSize: 16, color: '#0f172a', outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s', width: '100%' },
-  btn:        { background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '13px', fontSize: 15, fontWeight: 600, color: '#fff', cursor: 'pointer', marginTop: 4, boxShadow: '0 4px 12px rgba(99,102,241,0.35)' },
-  errorBox:   { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 },
-  spinner:    { width: 16, height: 16, border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' },
-  hint:       { display: 'flex', alignItems: 'center', gap: 8, marginTop: 24, padding: '10px 14px', background: '#f8fafc', borderRadius: 8, fontSize: 12, color: '#64748b', border: '1px solid #e2e8f0' },
-  hintMobile: { display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 20, padding: '12px 14px', background: '#f8fafc', borderRadius: 8, fontSize: 11, color: '#64748b', border: '1px solid #e2e8f0' },
-  hintIcon:   { fontSize: 14 },
-};
