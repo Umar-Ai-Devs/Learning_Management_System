@@ -27,13 +27,13 @@ export default function AdminDashboard() {
       <PageHeader title="Admin Dashboard" subtitle="System overview and recent activity" />
       {stats && (
         <>
-          <div style={s.grid4}>
+          <div className="stat-grid" style={s.grid4}>
             <StatCard label="Total Students" value={stats.users.total_students} icon="🎓" color="#6366f1" />
             <StatCard label="Total Teachers" value={stats.users.total_teachers} icon="👨‍🏫" color="#10b981" />
             <StatCard label="Active Users" value={stats.users.active_users} icon="✅" color="#f59e0b" />
             <StatCard label="Total Admins" value={stats.users.total_admins} icon="🛡" color="#ec4899" />
           </div>
-          <div style={{ ...s.grid4, marginTop: 16 }}>
+          <div className="stat-grid" style={{ ...s.grid4, marginTop: 16 }}>
             <StatCard label="Total Courses" value={stats.courses.total_courses} icon="📚" color="#8b5cf6" />
             <StatCard label="Active Enrollments" value={stats.enrollments.active_enrollments} icon="📋" color="#06b6d4" />
             <StatCard label="Upcoming Assignments" value={stats.assignments.upcoming_assignments} icon="📝" color="#f59e0b" />
@@ -41,7 +41,7 @@ export default function AdminDashboard() {
           </div>
 
           {recent && (
-            <div style={s.grid3}>
+            <div className="stat-grid" style={s.grid3}>
               <Card>
                 <h3 style={s.sh}>Recent Students</h3>
                 {recent.recent_students.map(u => (
@@ -87,11 +87,11 @@ export default function AdminDashboard() {
 }
 
 const s: Record<string, React.CSSProperties> = {
-  grid4: { display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 },
-  grid3: { display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginTop: 24 },
+  grid4: { display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 16 },
+  grid3: { display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 16, marginTop: 24 },
   sh: { margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: '#64748b' },
   recentRow: { display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', borderBottom: '1px solid #f1f5f9' },
-  recentAvatar: { width: 32, height: 32, borderRadius: 8, background: '#ede9fe', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 700, flexShrink: 0 },
+  recentAvatar: { width: 36, height: 36, borderRadius: 10, background: '#ede9fe', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, flexShrink: 0 },
   recentName: { fontSize: 13, color: '#0f172a', fontWeight: 500 },
   recentSub: { fontSize: 11, color: '#64748b' },
 };

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect, useRef } from 'react';
 import NotificationBell from './NotificationBell';
 
 const navConfig: Record<string, { icon: string; label: string; href: string }[]> = {
@@ -46,6 +46,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   if (!user) return null;
 
@@ -55,19 +58,70 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const closeSidebar = () => setSidebarOpen(false);
 
+  // Handle swipe gesture for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeThreshold = 50;
+    const diff = touchStartX.current - touchEndX.current;
+    
+    // Swipe right to open sidebar
+    if (diff < -swipeThreshold && !sidebarOpen) {
+      setSidebarOpen(true);
+    }
+    // Swipe left to close sidebar
+    else if (diff > swipeThreshold && sidebarOpen) {
+      setSidebarOpen(false);
+    }
+  };
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  }, [pathname]);
+
+  // Prevent body scroll when sidebar is open
+  useEffect(() => {
+    if (sidebarOpen && window.innerWidth < 768) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [sidebarOpen]);
+
   return (
-    <div className="dashboard-layout" style={s.shell}>
+    <div className="dashboard-layout" style={s.shell} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
       {/* Mobile menu button */}
-      <button onClick={toggleSidebar} style={s.menuBtn} className="mobile-menu-btn">
+      <button onClick={toggleSidebar} style={s.menuBtn} className="mobile-menu-btn" aria-label="Toggle menu">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M3 12h18M3 6h18M3 18h18"/>
         </svg>
       </button>
 
       {/* Sidebar */}
-      <aside className={sidebarOpen ? 'sidebar-open' : ''} style={{ ...s.sidebar, transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)' }}>
+      <aside 
+        ref={sidebarRef}
+        className={sidebarOpen ? 'sidebar-open' : ''} 
+        style={{ 
+          ...s.sidebar, 
+          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+          width: typeof window !== 'undefined' && window.innerWidth < 768 ? 280 : 240
+        }}
+        data-open={sidebarOpen}
+      >
         {/* Close button for mobile */}
-        <button onClick={closeSidebar} style={s.closeBtn} className="close-btn hide-desktop">
+        <button onClick={closeSidebar} style={s.closeBtn} className="close-btn hide-desktop" aria-label="Close menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M18 6L6 18M6 6l12 12"/>
           </svg>
@@ -99,9 +153,11 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   background: active ? `${accent}12` : 'transparent',
                   borderLeft: active ? `3px solid ${accent}` : '3px solid transparent',
                   color: active ? '#0f172a' : '#64748b',
+                  padding: '12px 12px',
+                  minHeight: 48,
                 }}>
-                  <span style={{ fontSize: 14, width: 20, textAlign: 'center', color: active ? accent : '#94a3b8' }}>{link.icon}</span>
-                  <span style={{ fontSize: 13, fontWeight: active ? 600 : 400 }}>{link.label}</span>
+                  <span style={{ fontSize: 16, width: 24, textAlign: 'center', color: active ? accent : '#94a3b8' }}>{link.icon}</span>
+                  <span style={{ fontSize: 14, fontWeight: active ? 600 : 400 }}>{link.label}</span>
                 </div>
               </Link>
             );
@@ -117,8 +173,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <span style={s.userName}>{user.name}</span>
             <span style={s.userEmail}>{user.email}</span>
           </div>
-          <button onClick={logout} style={s.logoutBtn} title="Logout">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <button onClick={logout} style={s.logoutBtn} title="Logout" aria-label="Logout">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
             </svg>
           </button>
@@ -154,28 +210,28 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 const s: Record<string, React.CSSProperties> = {
   shell:      { display: 'flex', minHeight: '100vh', background: '#f5f7fa' },
-  menuBtn:    { position: 'fixed', top: 12, left: 12, zIndex: 200, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
-  closeBtn:   { position: 'absolute', top: 16, right: 16, background: '#f1f5f9', border: 'none', borderRadius: 8, padding: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
-  sidebar:    { width: 240, background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '24px 0', position: 'fixed', top: 0, left: 0, height: '100vh', zIndex: 100, boxShadow: '2px 0 8px rgba(0,0,0,0.04)', transition: 'transform 0.2s ease' },
-  overlay:    { position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', zIndex: 90 },
+  menuBtn:    { position: 'fixed', top: 12, left: 12, zIndex: 200, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', width: 44, height: 44 },
+  closeBtn:   { position: 'absolute', top: 16, right: 16, background: '#f1f5f9', border: 'none', borderRadius: 8, padding: 10, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 44, height: 44 },
+  sidebar:    { width: 240, background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '24px 0', position: 'fixed', top: 0, left: 0, height: '100vh', zIndex: 100, boxShadow: '2px 0 8px rgba(0,0,0,0.04)', transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)' },
+  overlay:    { position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.5)', zIndex: 90, backdropFilter: 'blur(4px)' },
   logoArea:   { display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 24px' },
   logoIcon:   { width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   logoText:   { fontSize: 17, fontWeight: 700, color: '#0f172a' },
-  roleBadge:  { margin: '0 16px 20px', padding: '5px 10px', borderRadius: 6, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textAlign: 'center' },
+  roleBadge:  { margin: '0 16px 20px', padding: '6px 12px', borderRadius: 6, fontSize: 10, fontWeight: 700, letterSpacing: 1.5, textAlign: 'center' },
   nav:        { flex: 1, display: 'flex', flexDirection: 'column', gap: 2, padding: '0 8px', overflowY: 'auto' },
   navItem:    { display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 8, cursor: 'pointer', transition: 'all 0.15s', marginLeft: -3 },
   userArea:   { display: 'flex', alignItems: 'center', gap: 10, padding: '16px 16px 0', borderTop: '1px solid #f1f5f9', marginTop: 'auto' },
-  avatar:     { width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer', flexShrink: 0 },
+  avatar:     { width: 40, height: 40, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700, color: '#fff', cursor: 'pointer', flexShrink: 0 },
   userInfo:   { flex: 1, overflow: 'hidden' },
-  userName:   { display: 'block', fontSize: 12, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
+  userName:   { display: 'block', fontSize: 13, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   userEmail:  { display: 'block', fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  logoutBtn:  { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '6px 8px', cursor: 'pointer', color: '#dc2626', display: 'flex', alignItems: 'center', flexShrink: 0 },
-  mainWrap:   { marginLeft: 240, flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', width: 'calc(100% - 240px)' },
+  logoutBtn:  { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '8px 10px', cursor: 'pointer', color: '#dc2626', display: 'flex', alignItems: 'center', flexShrink: 0, width: 44, height: 44 },
+  mainWrap:   { marginLeft: 240, flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', width: 'calc(100% - 240px)', transition: 'margin-left 0.3s ease' },
   topbar:     { background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '0 36px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' },
   topbarLeft: { display: 'flex', alignItems: 'center', gap: 12 },
   pageTitle:  { fontSize: 15, fontWeight: 600, color: '#0f172a' },
   topbarRight:{ display: 'flex', alignItems: 'center', gap: 10 },
-  topAvatar:  { width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer' },
+  topAvatar:  { width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer' },
   content:    { padding: '32px 36px', flex: 1 },
 };
 

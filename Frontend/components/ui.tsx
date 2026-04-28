@@ -3,12 +3,12 @@ import { ReactNode, CSSProperties } from 'react';
 // ── Page Header ──────────────────────────────────────────────
 export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
-    <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
-      <div>
+    <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ flex: 1, minWidth: '200px' }}>
         <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#0f172a' }}>{title}</h1>
         {subtitle && <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>{subtitle}</p>}
       </div>
-      {action && <div>{action}</div>}
+      {action && <div style={{ marginLeft: 'auto' }}>{action}</div>}
     </div>
   );
 }
@@ -41,16 +41,18 @@ export function StatCard({ label, value, icon, color = '#6366f1' }: { label: str
 export function Table({ headers, children }: { headers: string[]; children: ReactNode }) {
   return (
     <div className="table-responsive" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr style={{ background: '#f8fafc' }}>
-            {headers.map(h => (
-              <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.8, borderBottom: '1px solid #e2e8f0' }}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>{children}</tbody>
-      </table>
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+          <thead>
+            <tr style={{ background: '#f8fafc' }}>
+              {headers.map(h => (
+                <th key={h} style={{ padding: '12px 16px', textAlign: 'left', fontSize: 11, fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 0.8, borderBottom: '1px solid #e2e8f0', whiteSpace: 'nowrap' }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>{children}</tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -62,7 +64,7 @@ export function Td({ children, style }: { children: ReactNode; style?: CSSProper
 // ── Badge ────────────────────────────────────────────────────
 export function Badge({ label, color = '#6366f1' }: { label: string; color?: string }) {
   return (
-    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: `${color}15`, color, border: `1px solid ${color}25` }}>
+    <span style={{ display: 'inline-block', padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: `${color}15`, color, border: `1px solid ${color}25`, whiteSpace: 'nowrap' }}>
       {label}
     </span>
   );
@@ -75,7 +77,19 @@ export function Input({ label, ...props }: { label?: string } & React.InputHTMLA
       {label && <label style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</label>}
       <input
         {...props}
-        style={{ background: '#ffffff', border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#0f172a', outline: 'none', width: '100%', boxSizing: 'border-box', ...props.style }}
+        style={{ 
+          background: '#ffffff', 
+          border: '1px solid #d1d5db', 
+          borderRadius: 8, 
+          padding: '12px 14px', 
+          fontSize: 14, 
+          color: '#0f172a', 
+          outline: 'none', 
+          width: '100%', 
+          boxSizing: 'border-box',
+          minHeight: '44px',
+          ...props.style 
+        }}
         onFocus={e => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)'; }}
         onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }}
       />
@@ -90,7 +104,18 @@ export function Select({ label, children, ...props }: { label?: string } & React
       {label && <label style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</label>}
       <select
         {...props}
-        style={{ background: '#ffffff', border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#0f172a', outline: 'none', width: '100%', ...props.style }}
+        style={{ 
+          background: '#ffffff', 
+          border: '1px solid #d1d5db', 
+          borderRadius: 8, 
+          padding: '12px 14px', 
+          fontSize: 14, 
+          color: '#0f172a', 
+          outline: 'none', 
+          width: '100%', 
+          minHeight: '44px',
+          ...props.style 
+        }}
       >
         {children}
       </select>
@@ -105,7 +130,20 @@ export function Textarea({ label, ...props }: { label?: string } & React.Textare
       {label && <label style={{ fontSize: 12, fontWeight: 600, color: '#374151' }}>{label}</label>}
       <textarea
         {...props}
-        style={{ background: '#ffffff', border: '1px solid #d1d5db', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#0f172a', outline: 'none', resize: 'vertical', width: '100%', boxSizing: 'border-box', ...props.style }}
+        style={{ 
+          background: '#ffffff', 
+          border: '1px solid #d1d5db', 
+          borderRadius: 8, 
+          padding: '12px 14px', 
+          fontSize: 14, 
+          color: '#0f172a', 
+          outline: 'none', 
+          resize: 'vertical', 
+          width: '100%', 
+          boxSizing: 'border-box',
+          minHeight: '100px',
+          ...props.style 
+        }}
         onFocus={e => { e.target.style.borderColor = '#6366f1'; e.target.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)'; }}
         onBlur={e => { e.target.style.borderColor = '#d1d5db'; e.target.style.boxShadow = 'none'; }}
       />
@@ -128,7 +166,22 @@ export function Btn({ variant = 'primary', children, style, className, ...props 
     <button
       {...props}
       className={`btn-responsive ${className || ''}`}
-      style={{ ...btnStyles[variant], borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', ...style }}
+      style={{ 
+        ...btnStyles[variant], 
+        borderRadius: 8, 
+        padding: '10px 18px', 
+        fontSize: 13, 
+        fontWeight: 600, 
+        cursor: 'pointer', 
+        display: 'inline-flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        gap: 6, 
+        whiteSpace: 'nowrap',
+        minHeight: '44px',
+        minWidth: '44px',
+        ...style 
+      }}
     >
       {children}
     </button>
@@ -142,7 +195,7 @@ export function Alert({ msg, type = 'success' }: { msg: string; type?: 'success'
     ? { bg: '#f0fdf4', border: '#bbf7d0', color: '#15803d' }
     : { bg: '#fef2f2', border: '#fecaca', color: '#dc2626' };
   return (
-    <div style={{ background: c.bg, border: `1px solid ${c.border}`, borderRadius: 8, padding: '10px 14px', fontSize: 13, color: c.color, marginBottom: 16, fontWeight: 500 }}>
+    <div style={{ background: c.bg, border: `1px solid ${c.border}`, borderRadius: 8, padding: '12px 16px', fontSize: 13, color: c.color, marginBottom: 16, fontWeight: 500 }}>
       {type === 'success' ? '✓ ' : '⚠ '}{msg}
     </div>
   );

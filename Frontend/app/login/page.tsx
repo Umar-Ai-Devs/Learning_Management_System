@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function LoginPage() {
@@ -8,6 +8,17 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(0);
+
+  // Track window width for responsive styles
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,38 +35,49 @@ export default function LoginPage() {
 
   return (
     <div style={s.page}>
-      {/* Left decorative panel */}
-      <div style={s.left}>
-        <div style={s.leftInner}>
-          <div style={s.leftLogo}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </div>
-          <h2 style={s.leftTitle}>EduFlow LMS</h2>
-          <p style={s.leftSub}>A modern platform for students, teachers and administrators to manage learning seamlessly.</p>
-          <div style={s.features}>
-            {['Manage courses & assignments', 'Track grades & submissions', 'Role-based access control'].map(f => (
-              <div key={f} style={s.featureRow}>
-                <span style={s.featureDot}>✓</span>
-                <span style={s.featureText}>{f}</span>
-              </div>
-            ))}
+      {/* Left decorative panel - hidden on mobile */}
+      {!isMobile && (
+        <div style={s.left}>
+          <div style={s.leftInner}>
+            <div style={s.leftLogo}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <h2 style={s.leftTitle}>EduFlow LMS</h2>
+            <p style={s.leftSub}>A modern platform for students, teachers and administrators to manage learning seamlessly.</p>
+            <div style={s.features}>
+              {['Manage courses & assignments', 'Track grades & submissions', 'Role-based access control'].map(f => (
+                <div key={f} style={s.featureRow}>
+                  <span style={s.featureDot}>✓</span>
+                  <span style={s.featureText}>{f}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Right login form */}
-      <div style={s.right}>
-        <div style={s.card}>
-          <h1 style={s.title}>Welcome back</h1>
-          <p style={s.subtitle}>Sign in to your account to continue</p>
+      <div style={isMobile ? s.rightMobile : s.right}>
+        <div style={isMobile ? s.cardMobile : s.card}>
+          {/* Mobile logo */}
+          {isMobile && (
+            <div style={s.mobileLogo}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+          )}
+          
+          <h1 style={isMobile ? s.titleMobile : s.title}>Welcome back</h1>
+          <p style={isMobile ? s.subtitleMobile : s.subtitle}>Sign in to your account to continue</p>
 
-          <form onSubmit={handleSubmit} style={s.form}>
+          <form onSubmit={handleSubmit} style={isMobile ? s.formMobile : s.form}>
             <div style={s.field}>
               <label style={s.label}>Email address</label>
               <input
-                style={s.input}
+                style={isMobile ? s.inputMobile : s.input}
                 type="email"
                 placeholder="you@example.com"
                 value={email}
@@ -68,7 +90,7 @@ export default function LoginPage() {
             <div style={s.field}>
               <label style={s.label}>Password</label>
               <input
-                style={s.input}
+                style={isMobile ? s.inputMobile : s.input}
                 type="password"
                 placeholder="••••••••"
                 value={password}
@@ -94,7 +116,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div style={s.hint}>
+          <div style={isMobile ? s.hintMobile : s.hint}>
             <span style={s.hintIcon}>💡</span>
             <span>Default admin: <strong>admin@lms.com</strong> / <strong>Admin@123456</strong></span>
           </div>
@@ -116,16 +138,24 @@ const s: Record<string, React.CSSProperties> = {
   featureDot: { width: 22, height: 22, borderRadius: '50%', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#fff', fontWeight: 700, flexShrink: 0 },
   featureText:{ fontSize: 14, color: 'rgba(255,255,255,0.9)' },
   right:      { flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 48 },
+  rightMobile:{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, paddingTop: 40 },
   card:       { background: '#ffffff', borderRadius: 20, padding: '48px 40px', width: '100%', maxWidth: 420, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' },
+  cardMobile: { background: '#ffffff', borderRadius: 16, padding: '24px 20px', width: '100%', maxWidth: 420, boxShadow: '0 4px 24px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' },
+  mobileLogo:  { display: 'flex', justifyContent: 'center', marginBottom: 20 },
   title:      { fontSize: 24, fontWeight: 700, color: '#0f172a', margin: '0 0 6px' },
+  titleMobile:{ fontSize: 22, fontWeight: 700, color: '#0f172a', margin: '0 0 6px', textAlign: 'center' },
   subtitle:   { fontSize: 14, color: '#64748b', margin: '0 0 32px' },
+  subtitleMobile:{ fontSize: 13, color: '#64748b', margin: '0 0 24px', textAlign: 'center' },
   form:       { display: 'flex', flexDirection: 'column', gap: 20 },
+  formMobile: { display: 'flex', flexDirection: 'column', gap: 16 },
   field:      { display: 'flex', flexDirection: 'column', gap: 6 },
   label:      { fontSize: 13, fontWeight: 600, color: '#374151' },
   input:      { background: '#fff', border: '1px solid #d1d5db', borderRadius: 10, padding: '12px 16px', fontSize: 14, color: '#0f172a', outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s' },
+  inputMobile:{ background: '#fff', border: '1px solid #d1d5db', borderRadius: 10, padding: '14px 16px', fontSize: 16, color: '#0f172a', outline: 'none', transition: 'border-color 0.2s, box-shadow 0.2s', width: '100%' },
   btn:        { background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: 10, padding: '13px', fontSize: 15, fontWeight: 600, color: '#fff', cursor: 'pointer', marginTop: 4, boxShadow: '0 4px 12px rgba(99,102,241,0.35)' },
   errorBox:   { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', fontSize: 13, color: '#dc2626', display: 'flex', alignItems: 'center', gap: 8 },
   spinner:    { width: 16, height: 16, border: '2px solid rgba(255,255,255,0.4)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.7s linear infinite' },
   hint:       { display: 'flex', alignItems: 'center', gap: 8, marginTop: 24, padding: '10px 14px', background: '#f8fafc', borderRadius: 8, fontSize: 12, color: '#64748b', border: '1px solid #e2e8f0' },
+  hintMobile: { display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 20, padding: '12px 14px', background: '#f8fafc', borderRadius: 8, fontSize: 11, color: '#64748b', border: '1px solid #e2e8f0' },
   hintIcon:   { fontSize: 14 },
 };

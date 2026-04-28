@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { PageHeader, StatCard, Card, Alert, Btn } from '@/components/ui';
+import { PageHeader, Card, Alert, Btn } from '@/components/ui';
 import api from '@/lib/api';
 
 export default function TeacherDashboard() {
@@ -30,7 +30,7 @@ export default function TeacherDashboard() {
       <Alert msg={msg} type="success" />
       <Alert msg={err} type="error" />
       {user && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, maxWidth: 800 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)', gap: 24, maxWidth: '100%' }}>
           <Card>
             <h3 style={s.sh}>Profile Info</h3>
             {(['name','email','qualification','specialization'] as const).map(k =>
@@ -43,7 +43,7 @@ export default function TeacherDashboard() {
             )}
             <div style={s.row}>
               <span style={s.key}>Status</span>
-              <span style={{ fontSize: 12, padding: '2px 10px', borderRadius: 20, background: user.is_active ? '#f0fdf4' : '#fef2f2', color: user.is_active ? '#16a34a' : '#dc2626', border: `1px solid ${user.is_active ? '#bbf7d0' : '#fecaca'}` }}>
+              <span style={{ fontSize: 12, padding: '4px 12px', borderRadius: 20, background: user.is_active ? '#f0fdf4' : '#fef2f2', color: user.is_active ? '#16a34a' : '#dc2626', border: `1px solid ${user.is_active ? '#bbf7d0' : '#fecaca'}` }}>
                 {user.is_active ? 'Active' : 'Inactive'}
               </span>
             </div>
@@ -63,8 +63,8 @@ export default function TeacherDashboard() {
 }
 
 const s: Record<string, React.CSSProperties> = {
-  sh: { margin: '0 0 16px', fontSize: 13, fontWeight: 600, color: '#64748b' },
-  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f1f5f9', fontSize: 13 },
-  key: { color: '#64748b', textTransform: 'capitalize' },
+  sh: { margin: '0 0 16px', fontSize: 14, fontWeight: 600, color: '#64748b' },
+  row: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f1f5f9', fontSize: 13, flexWrap: 'wrap', gap: 8 },
+  key: { color: '#64748b', textTransform: 'capitalize', minWidth: '100px' },
   val: { color: '#0f172a', fontWeight: 500 },
 };
