@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import NotificationBell from './NotificationBell';
 
 const navConfig: Record<string, { icon: string; label: string; href: string }[]> = {
@@ -45,16 +45,34 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!user) return null;
 
   const links = navConfig[user.role] || [];
   const accent = roleColors[user.role] || '#6366f1';
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const closeSidebar = () => setSidebarOpen(false);
+
   return (
     <div style={s.shell}>
+      {/* Mobile menu button */}
+      <button onClick={toggleSidebar} style={s.menuBtn}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M3 12h18M3 6h18M3 18h18"/>
+        </svg>
+      </button>
+
       {/* Sidebar */}
-      <aside style={s.sidebar}>
+      <aside style={{ ...s.sidebar, transform: sidebarOpen ? 'translateX(0)' : undefined }}>
+        {/* Close button for mobile */}
+        <button onClick={closeSidebar} style={s.closeBtn} className="hide-desktop">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+
         {/* Logo */}
         <div style={s.logoArea}>
           <div style={{ ...s.logoIcon, background: `${accent}15`, border: `1px solid ${accent}30` }}>
@@ -75,7 +93,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           {links.map(link => {
             const active = pathname === link.href;
             return (
-              <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
+              <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }} onClick={closeSidebar}>
                 <div style={{
                   ...s.navItem,
                   background: active ? `${accent}12` : 'transparent',
@@ -92,7 +110,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
         {/* User info + logout */}
         <div style={s.userArea}>
-          <div style={s.avatar} onClick={() => router.push(`/${user.role}/profile`)}>
+          <div style={s.avatar} onClick={() => { router.push(`/${user.role}/profile`); closeSidebar(); }}>
             {user.name.charAt(0).toUpperCase()}
           </div>
           <div style={s.userInfo}>
@@ -106,6 +124,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
       </aside>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && <div style={s.overlay} onClick={closeSidebar} />}
 
       {/* Main area */}
       <div style={s.mainWrap}>
@@ -133,7 +154,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
 const s: Record<string, React.CSSProperties> = {
   shell:      { display: 'flex', minHeight: '100vh', background: '#f5f7fa' },
-  sidebar:    { width: 240, background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '24px 0', position: 'fixed', top: 0, left: 0, height: '100vh', zIndex: 100, boxShadow: '2px 0 8px rgba(0,0,0,0.04)' },
+  menuBtn:    { position: 'fixed', top: 12, left: 12, zIndex: 200, background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' },
+  closeBtn:   { position: 'absolute', top: 16, right: 16, background: '#f1f5f9', border: 'none', borderRadius: 8, padding: 8, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  sidebar:    { width: 240, background: '#ffffff', borderRight: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', padding: '24px 0', position: 'fixed', top: 0, left: 0, height: '100vh', zIndex: 100, boxShadow: '2px 0 8px rgba(0,0,0,0.04)', transition: 'transform 0.2s ease' },
+  overlay:    { position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', zIndex: 90 },
   logoArea:   { display: 'flex', alignItems: 'center', gap: 10, padding: '0 20px 24px' },
   logoIcon:   { width: 36, height: 36, borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' },
   logoText:   { fontSize: 17, fontWeight: 700, color: '#0f172a' },
@@ -146,7 +170,7 @@ const s: Record<string, React.CSSProperties> = {
   userName:   { display: 'block', fontSize: 12, fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   userEmail:  { display: 'block', fontSize: 11, color: '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   logoutBtn:  { background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '6px 8px', cursor: 'pointer', color: '#dc2626', display: 'flex', alignItems: 'center', flexShrink: 0 },
-  mainWrap:   { marginLeft: 240, flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh' },
+  mainWrap:   { marginLeft: 240, flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', width: 'calc(100% - 240px)' },
   topbar:     { background: '#ffffff', borderBottom: '1px solid #e2e8f0', padding: '0 36px', height: 60, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, boxShadow: '0 1px 4px rgba(0,0,0,0.04)' },
   topbarLeft: { display: 'flex', alignItems: 'center', gap: 12 },
   pageTitle:  { fontSize: 15, fontWeight: 600, color: '#0f172a' },
@@ -154,3 +178,51 @@ const s: Record<string, React.CSSProperties> = {
   topAvatar:  { width: 34, height: 34, borderRadius: 10, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer' },
   content:    { padding: '32px 36px', flex: 1 },
 };
+
+// Responsive styles as inline style tag
+export const responsiveStyles = `
+  @media (max-width: 767px) {
+    aside {
+      transform: translateX(-100%) !important;
+      width: 260px !important;
+    }
+    aside[data-open="true"] {
+      transform: translateX(0) !important;
+    }
+    .main-wrap {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+    .content {
+      padding: 16px !important;
+      padding-top: 72px !important;
+    }
+    .topbar {
+      padding: 0 16px !important;
+      padding-left: 56px !important;
+    }
+    .menu-btn {
+      display: flex !important;
+    }
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    aside {
+      width: 200px !important;
+    }
+    .main-wrap {
+      margin-left: 200px !important;
+      width: calc(100% - 200px) !important;
+    }
+    .content {
+      padding: 24px !important;
+    }
+    .topbar {
+      padding: 0 24px !important;
+    }
+  }
+  @media (min-width: 1024px) {
+    .menu-btn {
+      display: none !important;
+    }
+  }
+`;

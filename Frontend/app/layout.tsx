@@ -1,8 +1,18 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { AuthProvider } from '@/context/AuthContext';
 import './globals.css';
 
-export const metadata: Metadata = { title: 'LMS — Learning Management System' };
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
+export const metadata: Metadata = { 
+  title: 'LMS — Learning Management System',
+  description: 'Learning Management System for students, teachers, and administrators',
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

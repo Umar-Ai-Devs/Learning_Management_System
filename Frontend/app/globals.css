@@ -9,6 +9,9 @@
 body {
   background: #f5f7fa;
   color: #1e293b;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
 }
 
 ::-webkit-scrollbar {
@@ -27,4 +30,373 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
+}
+
+/* ── Responsive Base Styles ───────────────────────────────── */
+:root {
+  --sidebar-width: 240px;
+  --topbar-height: 60px;
+  --transition: 0.2s ease;
+}
+
+/* Mobile (default - hidden sidebar) */
+@media (max-width: 767px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --sidebar-width: 200px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1024px) {
+  :root {
+    --sidebar-width: 240px;
+  }
+}
+
+/* ── Utility Classes ──────────────────────────────────────── */
+.hide-mobile {
+  display: none !important;
+}
+@media (min-width: 768px) {
+  .hide-mobile {
+    display: block !important;
+  }
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+.hide-tablet {
+  display: block !important;
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+/* ── Responsive Grid ──────────────────────────────────────── */
+.grid-responsive {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .grid-responsive {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .grid-responsive {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 1280px) {
+  .grid-responsive {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── Responsive Flex ──────────────────────────────────────── */
+.flex-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .flex-responsive {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+/* ── Responsive Text ───────────────────────────────────────── */
+.text-responsive {
+  font-size: 14px;
+  line-height: 1.5;
+}
+@media (min-width: 768px) {
+  .text-responsive {
+    font-size: 15px;
+  }
+}
+@media (min-width: 1024px) {
+  .text-responsive {
+    font-size: 16px;
+  }
+}
+
+/* ── Responsive Padding ────────────────────────────────────── */
+.p-responsive {
+  padding: 12px;
+}
+@media (min-width: 768px) {
+  .p-responsive {
+    padding: 16px;
+  }
+}
+@media (min-width: 1024px) {
+  .p-responsive {
+    padding: 24px;
+  }
+}
+
+/* ── Responsive Card ───────────────────────────────────────── */
+.card-responsive {
+  padding: 16px;
+  border-radius: 12px;
+}
+@media (min-width: 768px) {
+  .card-responsive {
+    padding: 20px;
+    border-radius: 14px;
+  }
+}
+@media (min-width: 1024px) {
+  .card-responsive {
+    padding: 24px;
+    border-radius: 16px;
+  }
+}
+
+/* ── Responsive Table Wrapper ───────────────────────────────── */
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-responsive table {
+  min-width: 600px;
+}
+
+/* ── Responsive Form ───────────────────────────────────────── */
+.form-responsive {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 640px) {
+  .form-responsive {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .form-responsive .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ── Full Width on Mobile ──────────────────────────────────── */
+.full-width-mobile {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .full-width-mobile {
+    width: auto;
+  }
+}
+
+/* ── Responsive Spacing ────────────────────────────────────── */
+.mb-responsive {
+  margin-bottom: 12px;
+}
+@media (min-width: 768px) {
+  .mb-responsive {
+    margin-bottom: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  .mb-responsive {
+    margin-bottom: 28px;
+  }
+}
+
+/* ── Responsive Title ───────────────────────────────────────── */
+.title-responsive {
+  font-size: 18px;
+  font-weight: 700;
+}
+@media (min-width: 768px) {
+  .title-responsive {
+    font-size: 20px;
+  }
+}
+@media (min-width: 1024px) {
+  .title-responsive {
+    font-size: 22px;
+  }
+}
+
+/* ── DashboardLayout Responsive ───────────────────────────── */
+@media (max-width: 767px) {
+  /* Hide sidebar on mobile by default */
+  .dashboard-layout aside {
+    transform: translateX(-100%);
+    width: 260px !important;
+  }
+  .dashboard-layout aside.sidebar-open {
+    transform: translateX(0);
+  }
+  .dashboard-layout .main-wrap {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .dashboard-layout .content {
+    padding: 16px !important;
+    padding-top: 72px !important;
+  }
+  .dashboard-layout .topbar {
+    padding: 0 16px !important;
+    padding-left: 56px !important;
+  }
+  .dashboard-layout .menu-btn {
+    display: flex !important;
+  }
+  /* Stack stat cards */
+  .dashboard-layout .stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .dashboard-layout aside {
+    width: 200px !important;
+  }
+  .dashboard-layout .main-wrap {
+    margin-left: 200px !important;
+    width: calc(100% - 200px) !important;
+  }
+  .dashboard-layout .content {
+    padding: 24px !important;
+  }
+  .dashboard-layout .topbar {
+    padding: 0 24px !important;
+  }
+  .dashboard-layout .stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-layout .menu-btn {
+    display: none !important;
+  }
+  .dashboard-layout .close-btn {
+    display: none !important;
+  }
+}
+
+/* ── Responsive Table ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .table-responsive {
+    font-size: 12px;
+  }
+  .table-responsive th,
+  .table-responsive td {
+    padding: 8px 10px !important;
+  }
+}
+
+/* ── Responsive Modal ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .modal-content {
+    padding: 20px !important;
+    margin: 16px !important;
+    max-width: calc(100% - 32px) !important;
+  }
+}
+
+/* ── Responsive Cards ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .card-responsive {
+    padding: 14px !important;
+  }
+  .stat-card {
+    padding: 14px !important;
+  }
+  .stat-card > div:first-child {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
+  }
+  .stat-card > div:last-child > div:first-child {
+    font-size: 20px !important;
+  }
+}
+
+/* ── Responsive Forms ───────────────────────────────────────── */
+@media (max-width: 767px) {
+  .form-responsive {
+    grid-template-columns: 1fr !important;
+  }
+  .form-row {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+  .form-row > * {
+    width: 100% !important;
+  }
+}
+
+/* ── Responsive Page Header ───────────────────────────────── */
+@media (max-width: 767px) {
+  .page-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  .page-header h1 {
+    font-size: 18px !important;
+  }
+}
+
+/* ── Responsive Buttons ────────────────────────────────────── */
+@media (max-width: 767px) {
+  .btn-responsive {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .btn-group {
+    flex-direction: column !important;
+    width: 100%;
+  }
+  .btn-group button {
+    width: 100%;
+  }
+}
+
+/* ── Responsive Search Bar ─────────────────────────────────── */
+@media (max-width: 767px) {
+  .search-bar {
+    flex-direction: column !important;
+  }
+  .search-bar > div:first-child {
+    width: 100% !important;
+  }
+  .search-bar button {
+    width: 100% !important;
+  }
+}
+
+/* ── Responsive Grid for Stats ─────────────────────────────── */
+.stat-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

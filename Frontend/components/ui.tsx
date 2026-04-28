@@ -3,7 +3,7 @@ import { ReactNode, CSSProperties } from 'react';
 // ── Page Header ──────────────────────────────────────────────
 export function PageHeader({ title, subtitle, action }: { title: string; subtitle?: string; action?: ReactNode }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
+    <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
       <div>
         <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#0f172a' }}>{title}</h1>
         {subtitle && <p style={{ margin: '4px 0 0', fontSize: 13, color: '#64748b' }}>{subtitle}</p>}
@@ -16,7 +16,7 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
 // ── Card ─────────────────────────────────────────────────────
 export function Card({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.06)', ...style }}>
+    <div className="card-responsive" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, padding: 24, boxShadow: '0 1px 4px rgba(0,0,0,0.06)', ...style }}>
       {children}
     </div>
   );
@@ -25,7 +25,7 @@ export function Card({ children, style }: { children: ReactNode; style?: CSSProp
 // ── Stat Card ────────────────────────────────────────────────
 export function StatCard({ label, value, icon, color = '#6366f1' }: { label: string; value: number | string; icon: string; color?: string }) {
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+    <div className="stat-card" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, padding: '20px 24px', display: 'flex', alignItems: 'center', gap: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
       <div style={{ width: 48, height: 48, borderRadius: 12, background: `${color}15`, border: `1px solid ${color}25`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
         {icon}
       </div>
@@ -40,7 +40,7 @@ export function StatCard({ label, value, icon, color = '#6366f1' }: { label: str
 // ── Table ────────────────────────────────────────────────────
 export function Table({ headers, children }: { headers: string[]; children: ReactNode }) {
   return (
-    <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
+    <div className="table-responsive" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 14, overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr style={{ background: '#f8fafc' }}>
@@ -123,10 +123,11 @@ const btnStyles: Record<BtnVariant, CSSProperties> = {
   success: { background: '#f0fdf4', color: '#16a34a', border: '1px solid #bbf7d0' },
 };
 
-export function Btn({ variant = 'primary', children, style, ...props }: { variant?: BtnVariant } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+export function Btn({ variant = 'primary', children, style, className, ...props }: { variant?: BtnVariant; className?: string } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
+      className={`btn-responsive ${className || ''}`}
       style={{ ...btnStyles[variant], borderRadius: 8, padding: '8px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap', ...style }}
     >
       {children}
@@ -152,7 +153,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
   if (!open) return null;
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.4)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }} onClick={onClose}>
-      <div style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 32, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }} onClick={e => e.stopPropagation()}>
+      <div className="modal-content" style={{ background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 32, width: '100%', maxWidth: 520, maxHeight: '85vh', overflowY: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.15)' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
           <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, color: '#0f172a' }}>{title}</h3>
           <button onClick={onClose} style={{ background: '#f1f5f9', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: 18, lineHeight: 1, width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
@@ -166,7 +167,7 @@ export function Modal({ open, onClose, title, children }: { open: boolean; onClo
 // ── Search Bar ───────────────────────────────────────────────
 export function SearchBar({ value, onChange, onSearch, placeholder = 'Search...' }: { value: string; onChange: (v: string) => void; onSearch: () => void; placeholder?: string }) {
   return (
-    <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+    <div className="search-bar" style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
       <div style={{ flex: 1, position: 'relative' }}>
         <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: '#94a3b8', fontSize: 14 }}>🔍</span>
         <input
@@ -177,7 +178,7 @@ export function SearchBar({ value, onChange, onSearch, placeholder = 'Search...'
           style={{ width: '100%', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 14px 10px 36px', fontSize: 13, color: '#0f172a', outline: 'none', boxSizing: 'border-box' }}
         />
       </div>
-      <Btn onClick={onSearch}>Search</Btn>
+      <Btn onClick={onSearch} className="btn-responsive">Search</Btn>
     </div>
   );
 }
